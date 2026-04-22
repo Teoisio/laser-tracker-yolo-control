@@ -86,7 +86,7 @@ while True:
                         config.KP_CONF_THRES
                     )
 
-                    heart_x, heart_y, x_sh, y_sh = compute_heart(
+                    heart_x, heart_y, x_sh, y_sh, x_hip, y_hip= compute_heart(
                         kps_xy,
                         kps_conf,
                         config.CONF_TH
@@ -99,8 +99,7 @@ while True:
                             heart_y,
                             x_sh,
                             y_sh,
-                            center_x,
-                            center_y
+                            x_hip, y_hip
                         )
 
                     target_x, target_y = select_target_point(

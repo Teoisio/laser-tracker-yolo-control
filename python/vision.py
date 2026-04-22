@@ -11,23 +11,34 @@ def extract_keypoints(keypoints, i):
     return kps_xy, kps_conf
 
 def compute_heart(kps_xy, kps_conf, conf_th):
-    if valid(5, kps_conf, conf_th) and valid(6, kps_conf, conf_th):
-        x_ls, y_ls = kps_xy[5]
-        x_rs, y_rs = kps_xy[6]
+    has_shoulders = valid(5, kps_conf, conf_th) and valid(6, kps_conf, conf_th)
+    has_hips = valid(11, kps_conf, conf_th) and valid(12, kps_conf, conf_th)
 
-        x_sh = (x_ls + x_rs) / 2
-        y_sh = (y_ls + y_rs) / 2
+    if not has_shoulders:
+        return None, None, None, None, None, None
 
+    x_ls, y_ls = kps_xy[5]
+    x_rs, y_rs = kps_xy[6]
+    x_sh = (x_ls + x_rs) / 2
+    y_sh = (y_ls + y_rs) / 2
+
+    if has_hips:
+        x_lh, y_lh = kps_xy[11]
+        x_rh, y_rh = kps_xy[12]
+        x_hip = (x_lh + x_rh) / 2
+        y_hip = (y_lh + y_rh) / 2
+
+        heart_x = int((x_sh + x_hip) / 2)
+        heart_y = int((y_sh + y_hip) / 2 - 0.1 * (y_hip - y_sh))
+    else:
         shoulder_width = abs(x_rs - x_ls)
-
-        offset = 0.25 * shoulder_width
+        x_hip = x_sh
+        y_hip = y_sh + 0.25 * shoulder_width
 
         heart_x = int(x_sh)
-        heart_y = int(y_sh + offset)
+        heart_y = int(y_hip)
 
-        return heart_x, heart_y, x_sh, y_sh
-
-    return None, None, None, None
+    return heart_x, heart_y, x_sh, y_sh, x_hip, y_hip
     
 def select_target_point(target_mode, kps_xy, kps_conf, torso_x, torso_y, conf_th):
 

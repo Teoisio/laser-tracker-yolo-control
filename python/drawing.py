@@ -29,9 +29,9 @@ def draw_keypoints_and_skeleton(image, kps_xy, kps_conf, skeleton, kp_conf_thres
                     2
                 )
 
-def draw_heart(image, heart_x, heart_y, x_sh, y_sh, center_x, center_y):
+def draw_heart(image, heart_x, heart_y, x_sh, y_sh, x_hip, y_hip):
+    cv2.line(image, (int(x_sh), int(y_sh)), (int(x_hip), int(y_hip)), (255, 255, 0), 2)
     cv2.circle(image, (int(heart_x), int(heart_y)), 5, (0, 255, 0), -1)
-    cv2.line(image, (int(x_sh), int(y_sh)), (int(heart_x), int(heart_y)), (255, 255, 0), 2)
 
 def draw_error(image, e_x, e_y):
     cv2.putText(
