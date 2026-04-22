@@ -129,9 +129,10 @@ while True:
 
     draw_mode(image, target_mode)
 
-    command = f'{pan},{tilt}\n'
-    # ser.write(command.encode())
-    print(command.strip())
+
+    # Push latest angles to serial thread (non-blocking)
+    # serial_ctrl.update(pan, tilt)
+    print(f'{pan},{tilt}') # debug — remove when serial is active
 
     cv2.imshow("Laser Tracker", image)
     key = cv2.waitKey(1)
