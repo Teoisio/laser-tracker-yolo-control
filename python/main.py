@@ -23,9 +23,10 @@ from control import (
     apply_limits, 
     update_target_mode
 )
-# Serial
-# ser = serial.Serial('/dev/cu.usbmodem1201',115200)
-# time.sleep(2)
+from serial_controller import SerialController
+# Serial ----(UNCOMMENT TO ENABLE)
+# serial_ctrl = SerialController(port=config.SERIAL_PORT, baud=config.SERIAL_BAUD, interval=config.SERIAL_INTERVAL)
+# serial_ctrl.start()
 
 # Camera
 cap = cv2.VideoCapture(config.CAMERA_INDEX)
@@ -144,4 +145,5 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
-# ser.close()
+# Graceful serial shutdown
+# serial_ctrl.stop()
