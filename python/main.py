@@ -21,7 +21,7 @@ from control import (
     apply_limits, 
     update_target_mode
 )
-from serial_controller import SerialController
+# from serial_controller import SerialController
 # Serial ----(UNCOMMENT TO ENABLE)
 # serial_ctrl = SerialController(port=config.SERIAL_PORT, baud=config.SERIAL_BAUD, interval=config.SERIAL_INTERVAL)
 # serial_ctrl.start()
