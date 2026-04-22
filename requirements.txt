@@ -1,5 +1,5 @@
-opencv-python
-ultralytics
-cvzone
-pyserial
-numpy
+opencv-python>=4.8
+ultralytics>=8.0
+cvzone>=1.5
+pyserial>=3.5
+numpy>=1.24
