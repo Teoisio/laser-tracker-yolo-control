@@ -6,7 +6,6 @@ from ultralytics import YOLO
 #SERIAL_BAUD = 115200
 #SERIAL_INTERVAL = 0.05 
 
-
 #Camera
 CAMERA_INDEX = 0
 FRAME_WIDTH = 1280

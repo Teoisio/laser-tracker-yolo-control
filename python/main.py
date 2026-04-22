@@ -1,6 +1,4 @@
 import cv2
-# import serial
-# import time
 from ultralytics import YOLO
 
 import config
