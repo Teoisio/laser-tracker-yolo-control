@@ -10,7 +10,7 @@ def update_control(pan, tilt, e_x, e_y, Kc):
 
 def apply_limits(pan, tilt):
     pan = max(0, min(180, pan))
-    tilt = max(0, min(80, tilt))
+    tilt = max(0, min(180, tilt))
     return pan, tilt
 
 def update_target_mode(key, current_mode):
@@ -28,3 +28,8 @@ def update_target_mode(key, current_mode):
         return "right_hip"
     else:
         return current_mode
+    
+def update_tracking_mode(key, current_mode):
+    if key == ord(' '):
+        return "manual" if current_mode == "auto" else "auto"
+    return current_mode

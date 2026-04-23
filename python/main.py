@@ -19,8 +19,11 @@ from control import (
     compute_error, 
     update_control, 
     apply_limits, 
-    update_target_mode
+    update_target_mode,
+    update_tracking_mode
 )
+
+from mouse import MouseController
 # from serial_controller import SerialController
 # Serial ----(UNCOMMENT TO ENABLE)
 # serial_ctrl = SerialController(port=config.SERIAL_PORT, baud=config.SERIAL_BAUD, interval=config.SERIAL_INTERVAL)
@@ -40,6 +43,10 @@ tilt = config.TILT_INIT
 
 # Default target
 target_mode = "heart"
+tracking_mode = "auto"
+
+# Mouse controller (initialized after first imshow)
+mouse_ctrl = None
 
 while True:
     success, image = cap.read()
@@ -114,35 +121,47 @@ while True:
                         cv2.circle(image, (target_x, target_y), 5, (0, 0, 255), -1)
                         cv2.line(image, (center_x, center_y), (target_x, target_y), (0, 0, 255), 2)
 
-                if target_x is not None:
-                    e_x, e_y = compute_error(center_x, center_y, target_x, target_y)
-                    draw_error(image, e_x, e_y)
-
-                    pan, tilt = update_control(pan, tilt, e_x, e_y, config.Kc)
-
+                if tracking_mode == "auto":
+                    if target_x is not None:
+                        e_x, e_y = compute_error(center_x, center_y, target_x, target_y)
+                        draw_error(image, e_x, e_y)
+                        pan, tilt = update_control(pan, tilt, e_x, e_y, config.Kc)
+ 
                 pan, tilt = apply_limits(pan, tilt)
-
+ 
                 break
 
         if target_found:
             break
 
-    draw_mode(image, target_mode)
+
+    if tracking_mode == "manual" and mouse_ctrl is not None:
+        pan, tilt = mouse_ctrl.get_servo_angles(w, h)
+        pan, tilt = apply_limits(pan, tilt)
+
+    draw_mode(image, f"{tracking_mode} | {target_mode}")
+
+    cv2.imshow("Laser Tracker", image)
+
+    if mouse_ctrl is None:
+        mouse_ctrl = MouseController("Laser Tracker")
+ 
+    laser = int(mouse_ctrl.laser_on) if mouse_ctrl else 0
 
 
     # Push latest angles to serial thread (non-blocking)
     # serial_ctrl.update(pan, tilt)
-    print(f'{pan},{tilt}') # debug — remove when serial is active
+    print(f'{pan},{tilt},{laser}')# debug — remove when serial is active
 
-    cv2.imshow("Laser Tracker", image)
+    
     key = cv2.waitKey(1)
 
     if key == 27:
         break
 
     target_mode = update_target_mode(key, target_mode)
+    tracking_mode = update_tracking_mode(key, tracking_mode)
 
 cap.release()
 cv2.destroyAllWindows()
-# Graceful serial shutdown
 # serial_ctrl.stop()
