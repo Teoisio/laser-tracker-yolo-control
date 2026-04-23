@@ -121,17 +121,17 @@ This produces a more stable and meaningful target compared to bounding box cente
 
 ### Error:
 
-    e_x = center_x - target_x
+e_x = center_x - target_x
 
-    e_y = center_y - target_y
+e_y = center_y - target_y
 
 ### Controller:
 
-    Proportional controller:
+Proportional controller:
 
-        pan = pan - Kc * e_x
+pan = pan - Kc * e_x
 
-        tilt = tilt - Kc * e_y
+tilt = tilt - Kc * e_y
 
 ### Limits:
 Servo angles are constrained to safe ranges.
