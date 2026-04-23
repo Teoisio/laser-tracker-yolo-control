@@ -122,12 +122,15 @@ This produces a more stable and meaningful target compared to bounding box cente
 ### Error:
 
 e_x = center_x - target_x
+
 e_y = center_y - target_y
 
 ### Controller:
 
 Proportional controller:
+
 pan = pan - Kc * e_x
+
 tilt = tilt - Kc * e_y
 
 ### Limits:
