@@ -140,8 +140,7 @@ Servo angles are constrained to safe ranges.
 
 ## 7. Serial Communication
 
-### Message format: 
-### pan,tilt,laser\n
+### Message format: pan,tilt,laser\n
 
 Example: 
     90,60,1
