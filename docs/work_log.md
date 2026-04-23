@@ -1,421 +1,304 @@
-# Laser Target Tracker Project — Work Log
+# Laser Target Tracker Project — Workflow
 
-## 1. Goal
-Build a real-time system that detects a person with computer vision and points a pan-tilt laser toward a selected target point on the body.  
-The system uses Python for vision and control, and Arduino for servo actuation.
+## 1. Overview
 
-The final goal is to:
-- detect a person in the camera frame
-- define a target point on the body
-- compute the error between frame center and target point
-- move the servos so that the laser points toward that target
+The system is a real-time vision-based tracker that controls a pan-tilt laser using Arduino.
+
+It supports two operating modes:
+
+- **Automatic mode** → target is obtained from YOLO pose detection  
+- **Manual mode** → target is controlled by the mouse  
+
+The system is divided into:
+
+- Python → vision, control, user interaction  
+- Arduino → actuation (servos + laser)
 
 ---
 
-## 2. General System Architecture
-
-The project is divided into two main parts:
+## 2. System Architecture
 
 ### Python side
-Python handles:
-- camera acquisition
-- YOLO inference
-- body keypoint extraction
-- target-point computation
-- error computation
-- control law (P controller)
-- automatic tracking mode
-- manual mouse-control mode
-- serial communication with Arduino
+Handles:
+
+- camera acquisition  
+- YOLO inference (pose model)  
+- body keypoint extraction  
+- target-point computation  
+- error computation  
+- control law (P controller)  
+- manual mouse input  
+- mode switching (keyboard)  
+- serial communication  
+
+---
 
 ### Arduino side
-Arduino handles:
-- receive serial commands
-- move the servos
-- optionally turn laser on/off
+Handles:
 
-### Data flow
+- receiving `(pan, tilt, laser)` from serial  
+- moving servos  
+- controlling laser output  
 
-The system operates in two modes, selected by the user using the keyboard (SPACE key):
+Arduino acts only as an actuator controller.
 
-- Automatic mode: target point is obtained from YOLO pose detection
-- Manual mode: target point is defined by mouse input
+---
 
-The processing pipeline is:
+## 3. Data Flow
+
+The system operates in two modes selected by the user (SPACE key).
+
+### Pipeline:
 
 camera frame  
 → user input (keyboard + mouse)  
-→ mode selection (SPACE key)  
-→ (optional) YOLO pose estimation  
-→ target point generation (vision or mouse)  
-→ error computation (center − target)  
-→ control law (P controller)  
-→ serial communication  
+→ mode selection (automatic / manual)  
+
+→ (if automatic) YOLO pose model  
+→ keypoints  
+
+→ target point generation (vision OR mouse)  
+→ error computation  
+→ control law  
+→ serial command `(pan, tilt, laser)`  
 → Arduino  
-→ servo actuation
+→ servos + laser  
 
 ---
 
-## 3. Control System
+## 4. Modes
 
-The control system is based on visual feedback.
+### 4.1 Automatic Mode
 
-### Input
-The control input is the pair of reference angles sent to the two servos:
-- pan
-- tilt
-
-### Output
-The controlled output is not directly an angle, but the image position of the target point:
-- target_x
-- target_y
-
-### Reference
-The desired reference is the center of the frame:
-- center_x
-- center_y
-
-### Error
-The error is defined as the difference between frame center and target point:
-
-- e_x = center_x - target_x
-- e_y = center_y - target_y
-
-This means:
-- if the target is not centered, the controller changes the servo angles
-- when the target reaches the frame center, the error tends to zero
-
-### Controller
-For now I am using a proportional controller:
-
-- pan = pan - Kc * e_x
-- tilt = tilt - Kc * e_y
-
-This is simple and works, but the laser point still oscillates because the visual measurement is noisy.  
-For this reason, future improvements may include smoothing, dead zone, or a more advanced controller.
-
-Detailed control calculations and theoretical notes are stored separately here:
-
-[Control theory notes](https://onedrive.live.com/personal/52385e9db3d3e4c5/_layouts/15/Doc.aspx?sourcedoc={b3d3e4c5-5e9d-2038-8052-700000000000}&action=edit&wd=target%28Final%20project.one%7C89c03916-2ec3-6b43-b4bd-f99d69b3e672%2FLaser%20Tracker%20Teoria%7C1370b02f-f1fb-0342-b154-0670466f73ca%2F%29&wdorigin=NavigationUrl)
+- YOLO pose model detects a person  
+- Extracts 17 body keypoints  
+- Computes a custom **heart target point**  
+- Computes error relative to frame center  
+- Updates pan and tilt using proportional control  
 
 ---
 
-## 4. Detection
+### 4.2 Manual Mode
 
-At the beginning I used the `yolov8n.pt` model.  
-In that version I detected the person with a bounding box and used the center of the rectangle as the target point.
+- Mouse position defines the target  
+- Mouse movement → mapped to servo angles  
+- Right mouse click → toggles laser  
 
-The workflow was:
-- detect person
-- draw bounding box with `cv2` and `cvzone`
-- compute rectangle center
-- use rectangle center as the target
+No YOLO computation is required in this mode.
 
-This method was simple, but precision was low and the laser point moved too much.  
-The center of the box was not stable, because the box changes slightly from frame to frame.
+---
 
-For this reason I changed approach and used the `yolo11n-pose.pt` model.
+### 4.3 Mode Switching
 
-This model detects:
-- the person
-- the 17 COCO body keypoints
+- SPACE key toggles:
+  - "auto" ↔ "manual"
 
-That made it possible to define target points using body anatomy instead of only the bounding box.
+- ESC key exits the program
 
 ---
 
 ## 5. Target Definition
 
-The key problem was that YOLO pose detects body keypoints, but it does not directly provide a “heart” point.
+YOLO pose model provides 17 keypoints, but no direct “heart” point.
 
-So I defined a custom target point called **heart**.
+### Heart computation:
 
-### Why I introduced heart
-I wanted a point that is:
-- more stable than the bounding-box center
-- more central than a shoulder
-- still available even when some body parts are missing
+- midpoint between shoulders  
+- if hips available → refined using torso axis  
+- fallback → shoulder-based offset  
 
-### First heart idea
-Initially the heart point was based only on shoulders:
-- midpoint between left shoulder and right shoulder
-- then a vertical offset downward
-
-This already worked better than the box center.
-
-### Improved heart computation
-Later I improved the logic.
-
-Current logic:
-- if shoulders are missing → no valid heart point
-- if shoulders exist and hips also exist:
-  - compute shoulder midpoint
-  - compute hip midpoint
-  - compute a point along the torso axis
-  - place the heart slightly above the torso center
-- if shoulders exist but hips do not:
-  - use fallback based on shoulder midpoint
-  - estimate heart position using shoulder width
-
-This makes the target more anatomically meaningful and more robust.
-
-### Current heart computation summary
-- midpoint between shoulders
-- if hips available → refined using torso axis
-- fallback → shoulder-based offset
-
-### Other selectable target points
-Besides heart, the system can also point to:
-- nose
-- left shoulder
-- right shoulder
-- left hip
-- right hip
-
-The default target is currently **heart**.
+This produces a more stable and meaningful target compared to bounding box center.
 
 ---
 
-## 6. Serial Communication
+## 6. Control System
 
-Python sends commands to Arduino using serial communication.
+### Reference:
+- center of the frame
 
-### Message format
-Python sends:
-`pan,tilt\n`
+### Target:
+- selected body point OR mouse position
 
-Example:
-`90,60\n`
+### Error:
 
-### Arduino behavior
+e_x = center_x - target_x
+e_y = center_y - target_y
+
+### Controller:
+
+Proportional controller:
+pan = pan - Kc * e_x
+tilt = tilt - Kc * e_y
+
+### Limits:
+Servo angles are constrained to safe ranges.
+
+---
+
+## 7. Serial Communication
+
+### Message format: pan,tilt,laser\n
+
+Example: 90,60,1
+
+### Behavior:
+
+Python:
+- computes latest values
+- sends via serial thread
+
 Arduino:
-- reads the incoming string
-- finds the comma
-- extracts pan and tilt values
-- constrains them in a safe range
-- writes them to the servo motors
-
-This communication allows Python to run the vision/control loop while Arduino executes the physical motion.
+- parses values
+- updates servos
+- sets laser ON/OFF
 
 ---
 
-## 7. Arduino Logic
+## 8. Serial Controller (Threaded)
 
-On Arduino I use:
-- `Servo.h`
-- one servo for pan
-- one servo for tilt
-- one laser output pin
+A background thread is used to:
 
-### Automatic mode
-In automatic mode:
-- Arduino reads pan/tilt values from serial
-- it moves the servos accordingly
+- send commands at fixed intervals  
+- avoid blocking the main loop  
+- send only updated values  
 
-### Manual mode
-In manual mode:
-- mouse controls the pan-tilt
-
-This is useful for testing and alignment.
+This improves responsiveness and stability.
 
 ---
 
-## 8. File Structure
+## 9. Mouse Control
 
-The code is modularized so that each file has a specific responsibility.
+Mouse interaction is handled using OpenCV callbacks.
 
-### `main.py`
-This is the main loop of the project.
+### Features:
 
-It:
-- reads frames from the camera
-- runs the YOLO model
-- gets boxes and keypoints
-- computes the selected target point
-- computes the control error
-- updates pan and tilt
-- sends commands to serial
-- draws the interface on screen
-- reads keyboard input to change target mode
+- mouse movement → updates `(pan, tilt)`  
+- right click → toggles laser  
 
-So `main.py` is the orchestrator of the whole system.
-
-### `config.py`
-Contains project parameters such as:
-- camera index
-- frame width and height
-- model path
-- gain `Kc`
-- initial pan/tilt values
-- confidence thresholds
-- skeleton connections
-
-This file is useful because all constants are centralized in one place.
-
-### `vision.py`
-Contains vision-related logic.
-
-It includes functions for:
-- extracting keypoints from YOLO results
-- checking whether a keypoint is valid
-- computing the custom heart point
-- selecting which target point should be used
-
-This file handles the geometry of the body targets.
-
-### `drawing.py`
-Contains all the drawing/visualization functions.
-
-It is used to:
-- draw frame crosshair
-- draw bounding boxes
-- draw skeleton and keypoints
-- draw heart point
-- draw target mode
-- draw the error text
-
-This file keeps graphics separate from logic.
-
-### `control.py`
-Contains control-related functions.
-
-It includes:
-- error computation
-- proportional update of pan and tilt
-- application of angle limits
-- keyboard-based target mode update
-
-This file handles the decision and control part.
-
-### `serial_controller.py`
-This file manages serial communication in a cleaner way.
-
-Its purpose is:
-- to decouple the vision loop from serial writes
-- to send only the latest pan/tilt command
-- to avoid blocking the main loop
-
-This is useful because the camera loop can run faster and more smoothly.
-
-### `arduino/pan_tilt_laser_tracker/pan_tilt_laser_tracker.ino`
-This is the Arduino sketch.
-
-It:
-- receives serial commands
-- controls the two servos
-- allows manual mode with joystick
-- controls the laser pin
+Mapping:
+mouse_x → pan (0 → 180)
+mouse_y → tilt (0 → 180)
 
 ---
 
-## 9. Main Program Flow (`main.py`)
+## 10. Main Program Flow (main.py)
 
-The sequence inside `main.py` is approximately:
+1. Initialize camera and model  
+2. Initialize modes (`auto`, `heart`)  
+3. Start loop:
 
-1. Open camera
-2. Load YOLO pose model
-3. Initialize pan and tilt values
-4. Set default target mode (`heart`)
-5. Start loop:
-   - read a frame
-   - flip image
-   - run YOLO
-   - compute frame center
-   - draw crosshair
-   - search for first detected person
-   - extract pose keypoints
-   - compute heart point
-   - select current target point
-   - draw target
-   - compute error
-   - update controller
-   - apply limits
-   - send command
-   - show interface
-   - read keyboard input
-6. Exit loop when ESC is pressed
-7. Close camera and windows
-8. stop serial communication cleanly if enabled
+   - capture frame  
+   - flip image  
+   - compute frame center  
+   - draw crosshair  
 
-This section is important because it explains how all files interact.
+   IF automatic mode:
+   - run YOLO  
+   - extract keypoints  
+   - compute heart  
+   - select target  
+   - compute error  
+   - update control  
 
----
+   IF manual mode:
+   - read mouse position  
+   - map to servo angles  
 
-## 10. Current State of the Project
+   - apply limits  
+   - compute laser state  
+   - send `(pan, tilt, laser)`  
 
-At the moment the project already includes:
-- person detection
-- pose estimation
-- custom heart target computation
-- multiple target modes
-- proportional controller
-- modular Python architecture
-- Arduino integration
-- manual/automatic mode on Arduino
+   - draw interface  
+   - read keyboard input  
 
-So the basic full system is already working conceptually.
+4. Exit on ESC  
+5. release camera and close windows  
 
 ---
 
-## 11. Main Problems Observed
+## 11. File Structure
 
-The main practical issue is that the laser point does not remain perfectly still on the target.
+### main.py
+Main loop and system orchestration
 
-Possible causes:
-- noisy keypoint detection
-- frame-by-frame fluctuations
-- no smoothing yet
-- proportional control only
-- servo mechanical limitations
+### vision.py
+- keypoint extraction  
+- heart computation  
+- target selection  
 
-This is the main aspect to improve next.
+### control.py
+- error computation  
+- controller  
+- mode switching  
+
+### drawing.py
+- visualization functions  
+
+### mouse.py
+- mouse tracking  
+- mapping mouse → servo  
+- laser toggle  
+
+### serial_controller.py
+- threaded serial communication  
+
+### config.py
+- parameters and constants  
+
+### Arduino (.ino)
+- receives serial data  
+- controls servos and laser  
 
 ---
 
-## 12. TODO / Next Steps
+## 12. Current System Capabilities
 
-### Documentation
-- [ ] update `README.md`
-- [ ] write `control_design.pdf`
-- [ ] write `report.pdf`
+- real-time person tracking  
+- pose-based targeting  
+- custom anatomical target (heart)  
+- dual control mode (auto/manual)  
+- mouse interaction  
+- threaded serial communication  
+- modular architecture  
 
-### Python / Vision
-- [ ] smooth the critical keypoints
-- [ ] add more selectable target points
-- [ ] improve handling of missing keypoints
+---
 
-### Interface
-- [ ] when pressing TAB, show a control/help panel
-- [ ] when pressing ESC, show an exit panel
-- [ ] add command legend on screen
-- [ ] implement close-laser shortcut
+## 13. Current Limitations
+
+- target jitter due to noisy keypoints  
+- proportional control only  
+- no smoothing/filtering yet  
+- no calibration between pixels and servo angles  
+
+---
+
+## 14. Next Steps (TODO)
+
+### Vision
+- [ ] smooth keypoints / target point  
+- [ ] improve fallback logic  
 
 ### Control
-- [ ] add smoothing
-- [ ] maybe add dead zone
-- [ ] maybe add max servo-step limitation
+- [ ] add dead zone  
+- [ ] limit max servo speed  
+- [ ] consider PI/PID  
 
-### Interaction modes
-- [ ] add mouse-control mode
-- [ ] allow switching between automatic and mouse control
+### Interface
+- [ ] add UI panel (TAB)  
+- [ ] improve visualization  
 
-### Model / Recognition
-- [ ] investigate custom training or custom identification
-- [ ] example idea: distinguish specific people
+### System
+- [ ] full hardware testing  
+- [ ] calibration  
 
-### Hardware
-- [ ] wait for servos
-- [ ] complete assembly and wiring
-- [ ] test real setup
+### Documentation
+- [ ] complete report  
+- [ ] diagrams  
+- [ ] demo video  
 
 ---
 
-## 13. Notes for Final Report
-This work log is only for remembering the development process.
+## 15. Notes
 
-Later I will:
-- correct language
-- improve structure
-- make diagrams
-- add images and screenshots
-- make the report more formal and publishable
+This file represents the development workflow and system logic.  
+It will be refined later into a formal report.
