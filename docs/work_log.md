@@ -289,6 +289,7 @@ Main loop and system orchestration
 
 ### Interface
 - [ ] add UI panel (TAB)  
+- [ ] add esc panel (ESC)
 - [ ] improve visualization  
 
 ### System
