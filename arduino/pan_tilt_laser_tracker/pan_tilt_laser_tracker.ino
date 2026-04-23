@@ -24,7 +24,7 @@ void loop() {
 
     if (comma1 > 0 && comma2 > 0) {
       int pan   = constrain(data.substring(0, comma1).toInt(), 0, 180);
-      int tilt  = constrain(data.substring(comma1 + 1, comma2).toInt(), 0, 90);
+      int tilt  = constrain(data.substring(comma1 + 1, comma2).toInt(), 0, 180);
       int laser = data.substring(comma2 + 1).toInt();
 
       servoPan.write(pan);
