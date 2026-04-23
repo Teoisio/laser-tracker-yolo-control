@@ -150,7 +150,7 @@ while True:
 
 
     # Push latest angles to serial thread (non-blocking)
-    # serial_ctrl.update(pan, tilt)
+    # serial_ctrl.update(pan, tilt, laser)
     print(f'{pan},{tilt},{laser}')# debug — remove when serial is active
 
     
