@@ -287,6 +287,13 @@ Main loop and system orchestration
 - [ ] limit max servo speed  
 - [ ] consider PI/PID  
 
+### Multi-person Tracking
+- [ ] use YOLO to detect multiple people in the frame
+- [ ] assign an ID/index to each detected person
+- [ ] switch selected person by pressing a key
+- [ ] track only the selected person
+- [ ] ignore other people while controlling the laser
+
 ### Interface
 - [ ] add UI panel (TAB)  
 - [ ] add esc panel (ESC)
@@ -300,13 +307,6 @@ Main loop and system orchestration
 - [ ] complete report  
 - [ ] diagrams  
 - [ ] demo video  
-
-### Multi-person Tracking
-- [ ] use YOLO to detect multiple people in the frame
-- [ ] assign an ID/index to each detected person
-- [ ] switch selected person by pressing a key
-- [ ] track only the selected person
-- [ ] ignore other people while controlling the laser
 
 ---
 
