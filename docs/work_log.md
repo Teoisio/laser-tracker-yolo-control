@@ -301,6 +301,13 @@ Main loop and system orchestration
 - [ ] diagrams  
 - [ ] demo video  
 
+### Multi-person Tracking
+- [ ] use YOLO to detect multiple people in the frame
+- [ ] assign an ID/index to each detected person
+- [ ] switch selected person by pressing a key
+- [ ] track only the selected person
+- [ ] ignore other people while controlling the laser
+
 ---
 
 ## 15. Notes
