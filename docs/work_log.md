@@ -184,7 +184,7 @@ mouse_x → pan (0 → 180)
 mouse_y → tilt (0 → 180)
 
 ---
-### 11. Keypoint Smoothing
+### 10. Keypoint Smoothing
 
 To reduce noise in the detected body keypoints, a smoothing module was introduced.
 
@@ -200,8 +200,17 @@ The smoothed keypoints are then used for:
 This significantly improves tracking stability.
 
 ---
+### 11. Multi-person Selection
 
-## 10. Main Program Flow (main.py)
+YOLO detects multiple people, sorted left to right.  
+The user switches the active target with A/D keys.
+
+Only the selected person is used for keypoints, target computation, and control.  
+The smoother is reset when switching person.
+
+---
+
+## 12. Main Program Flow (main.py)
 
 1. Initialize camera and model  
 2. Initialize modes (`auto`, `heart`)  
@@ -214,6 +223,8 @@ This significantly improves tracking stability.
 
    IF automatic mode:
    - run YOLO  
+   - sort people (left → right)  
+   - select active person (A/D keys)  
    - extract keypoints  
    - apply keypoint smoothing
    - compute heart  
@@ -240,7 +251,7 @@ This significantly improves tracking stability.
 
 ---
 
-## 11. File Structure
+## 13. File Structure
 
 ### main.py
 Main loop and system orchestration
@@ -280,7 +291,7 @@ Formula:
 smoothed = alpha * current + (1 - alpha) * previous
 ---
 
-## 12. Current System Capabilities
+## 14. Current System Capabilities
 
 - real-time person tracking  
 - pose-based targeting  
@@ -292,7 +303,7 @@ smoothed = alpha * current + (1 - alpha) * previous
 
 ---
 
-## 13. Current Limitations
+## 15. Current Limitations
 
 - target jitter due to noisy keypoints  
 - proportional control only  
@@ -301,23 +312,18 @@ smoothed = alpha * current + (1 - alpha) * previous
 
 ---
 
-## 14. Next Steps (TODO)
+## 15. Next Steps (TODO)
 
 ### Vision
-- [x] smooth keypoints / target point  
-- [ ] improve fallback logic  
+- [x] implement keypoint smoothing
+- [x] implement multi-person selection with A/D keys
+- [ ] improve fallback logic
+- [ ] later upgrade to persistent YOLO tracking IDs 
 
 ### Control
 - [x] add dead zone  
 - [x] limit max servo speed  
 - [ ] consider PI/PID  
-
-### Multi-person Tracking
-- [ ] use YOLO to detect multiple people in the frame
-- [ ] assign an ID/index to each detected person
-- [ ] switch selected person by pressing a key
-- [ ] track only the selected person
-- [ ] ignore other people while controlling the laser
 
 ### Interface
 - [ ] add UI panel (TAB)  
@@ -340,7 +346,7 @@ smoothed = alpha * current + (1 - alpha) * previous
 
 ---
 
-## 15. Notes
+## 17. Notes
 
 This file represents the development workflow and system logic.  
 It will be refined later into a formal report.
