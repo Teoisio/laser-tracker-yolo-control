@@ -41,7 +41,6 @@ def compute_heart(kps_xy, kps_conf, conf_th):
     return heart_x, heart_y, x_sh, y_sh, x_hip, y_hip
     
 def select_target_point(target_mode, kps_xy, kps_conf, torso_x, torso_y, conf_th):
-
     if target_mode == "heart":
         if torso_x is not None:
             return torso_x, torso_y
@@ -67,3 +66,20 @@ def select_target_point(target_mode, kps_xy, kps_conf, torso_x, torso_y, conf_th
             return int(kps_xy[12][0]), int(kps_xy[12][1])
 
     return None, None
+
+def get_person_indices(boxes):
+    return [i for i, box in enumerate(boxes) if int(box.cls[0]) == 0]
+
+def sort_people_by_x(boxes, person_indices):
+    def center_x(i):
+        xyxy = boxes.xyxy[i]
+        if len(xyxy) < 4:
+            return float('inf')
+        return (xyxy[0] + xyxy[2]) / 2
+    return sorted(person_indices, key=center_x)
+
+def select_person_index(person_indices, selected_person_index):
+    if not person_indices:
+        return None
+    selected_person_index = min(selected_person_index, len(person_indices) - 1)
+    return person_indices[selected_person_index]

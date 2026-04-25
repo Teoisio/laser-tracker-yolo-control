@@ -54,3 +54,19 @@ def draw_mode(image, target_mode):
         (255, 255, 0),
         2
     )
+
+def draw_person_id(image, x1, y1, person_number, selected=False):
+    label = f"SELECTED {person_number}" if selected else f"Person {person_number}"
+    color = (0, 0, 255) if selected else (255, 0, 0)
+    cvzone.putTextRect(image, label, (max(0, x1), max(30, y1)), colorR=color)
+
+def draw_selected_person_status(image, selected_person_index, num_people):
+    cv2.putText(
+        image,
+        f"Selected person: {selected_person_index+1} / {num_people}",
+        (20, 120),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        1,
+        (0, 200, 255),
+        2
+    )

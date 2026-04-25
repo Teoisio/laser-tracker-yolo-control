@@ -21,3 +21,5 @@ class KeypointSmoother:
 
         self._prev = smoothed
         return smoothed
+    def reset(self):
+        self._prev = None

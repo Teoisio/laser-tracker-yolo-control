@@ -45,3 +45,12 @@ def limit_step(prev_pan, prev_tilt, pan, tilt, max_step_pan, max_step_tilt):
     pan  = int(max(prev_pan  - max_step_pan,  min(prev_pan  + max_step_pan,  pan)))
     tilt = int(max(prev_tilt - max_step_tilt, min(prev_tilt + max_step_tilt, tilt)))
     return pan, tilt
+
+def update_selected_person(key, selected_person_index, num_people):
+    if num_people == 0:
+        return 0
+    if key == ord('a'):
+        return (selected_person_index - 1) % num_people
+    elif key == ord('d'):
+        return (selected_person_index + 1) % num_people
+    return selected_person_index
