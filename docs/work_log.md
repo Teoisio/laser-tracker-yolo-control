@@ -184,6 +184,22 @@ mouse_x → pan (0 → 180)
 mouse_y → tilt (0 → 180)
 
 ---
+### 11. Keypoint Smoothing
+
+To reduce noise in the detected body keypoints, a smoothing module was introduced.
+
+YOLO pose estimation produces slightly different keypoint positions at each frame, causing jitter in the target point and unstable control.
+
+To solve this, an exponential smoothing approach (EMA) is applied to each keypoint over time.
+
+The smoothed keypoints are then used for:
+- drawing the skeleton
+- computing the heart point
+- selecting the target point
+
+This significantly improves tracking stability.
+
+---
 
 ## 10. Main Program Flow (main.py)
 
@@ -199,6 +215,7 @@ mouse_y → tilt (0 → 180)
    IF automatic mode:
    - run YOLO  
    - extract keypoints  
+   - apply keypoint smoothing
    - compute heart  
    - select target  
    - compute error  
@@ -253,6 +270,11 @@ Main loop and system orchestration
 - receives serial data  
 - controls servos and laser  
 
+### smoother.py
+- smooths keypoints over time using a weighted average
+- ignores low-confidence detections
+Formula:
+smoothed = alpha * current + (1 - alpha) * previous
 ---
 
 ## 12. Current System Capabilities
@@ -279,7 +301,7 @@ Main loop and system orchestration
 ## 14. Next Steps (TODO)
 
 ### Vision
-- [ ] smooth keypoints / target point  
+- [x] smooth keypoints / target point  
 - [ ] improve fallback logic  
 
 ### Control

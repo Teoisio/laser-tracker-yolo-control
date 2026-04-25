@@ -45,4 +45,5 @@ SKELETON = [
 KP_CONF_THRES = 0.5
 CONF_TH = 0.4
 
-
+# Smoother
+SMOOTHER_ALPHA = 0.4

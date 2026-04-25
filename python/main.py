@@ -22,6 +22,7 @@ from control import (
     update_target_mode,
     update_tracking_mode
 )
+from smoother import KeypointSmoother
 from mouse import MouseController
 # from serial_controller import SerialController
 
@@ -48,6 +49,10 @@ tracking_mode = "auto"
 # Mouse controller (initialized after first imshow)
 mouse_ctrl = None
 
+keypoint_smoother = KeypointSmoother(
+    alpha=config.SMOOTHER_ALPHA,
+    conf_th=config.KP_CONF_THRES
+)
 while True:
     success, image = cap.read()
     if not success:
@@ -81,7 +86,10 @@ while True:
                     heart_x, heart_y = None, None
 
                     if keypoints is not None and len(keypoints) > i:
+                        
                         kps_xy, kps_conf = extract_keypoints(keypoints, i)
+                        
+                        kps_xy = keypoint_smoother.update(kps_xy, kps_conf)
 
                         draw_keypoints_and_skeleton(
                             image,
