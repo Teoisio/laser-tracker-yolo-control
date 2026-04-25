@@ -76,6 +76,7 @@ settings = {
     'Kc':            config.Kc,
     'max_step_pan':  config.MAX_STEP_PAN,
     'max_step_tilt': config.MAX_STEP_TILT,
+    'smoother_alpha': config.SMOOTHER_ALPHA,
 }
 
 # Mouse controller (initialized after first imshow)
@@ -100,9 +101,10 @@ while True:
     center_x = w // 2
     center_y = h // 2
 
-    draw_crosshair(image, center_x, center_y)
+    
 
     if not menu_open:
+        draw_crosshair(image, center_x, center_y)
         if tracking_mode == "auto":
             results = model(image, stream=True)
 
@@ -217,7 +219,11 @@ while True:
         break
 
     if menu_open:
+        prev_alpha = settings['smoother_alpha']
         settings, selected_setting = update_settings(key, settings, selected_setting)
+        if settings['smoother_alpha'] != prev_alpha:
+            keypoint_smoother.alpha = settings['smoother_alpha']
+            keypoint_smoother.reset()
     else:
         target_mode = update_target_mode(key, target_mode)
         tracking_mode = update_tracking_mode(key, tracking_mode)

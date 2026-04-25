@@ -3,13 +3,14 @@ ARROW_RIGHT = 3
 ARROW_UP    = 0
 ARROW_DOWN  = 1
 
-SETTING_KEYS = ['dead_zone', 'Kc', 'max_step_pan', 'max_step_tilt']
+SETTING_KEYS = ['dead_zone', 'Kc', 'max_step_pan', 'max_step_tilt', 'smoother_alpha']
 
 SETTINGS_STEP = {
     'dead_zone':     1,
     'Kc':            0.005,
     'max_step_pan':  1,
     'max_step_tilt': 1,
+    'smoother_alpha': 0.05,
 }
 
 SETTINGS_LIMITS = {
@@ -17,6 +18,7 @@ SETTINGS_LIMITS = {
     'Kc':            (0.001, 0.2),
     'max_step_pan':  (1, 20),
     'max_step_tilt': (1, 20),
+    'smoother_alpha': (0.05, 0.95),
 }
 
 

@@ -143,7 +143,7 @@ Servo angles are constrained to safe ranges.
 ### Message format: pan,tilt,laser\n
 
 Example: 
-    90,60,1
+    90,90,1
 
 ### Behavior:
 
@@ -216,7 +216,7 @@ ESC opens a pause menu instead of closing directly.
 From the menu, `R` resumes and `Q` quits.  
 While the menu is open, tracking/control is paused.
 
-The ESC menu will allow runtime tuning of control parameters such as dead zone, Kc, and max step.  
+The ESC menu will allow runtime tuning of control parameters such as dead zone, Kc, smoother_alpha,and max step.  
 Values are initialized from config.py and modified temporarily during execution.
 
 ---
@@ -235,7 +235,7 @@ Values are initialized from config.py and modified temporarily during execution.
    - draw pause/menu overlay  
    - read menu input  
    - resume or quit 
-   - update the settings (Kc, dead zone, max step) values
+   - update the settings (Kc, dead zone, max step, smoother alpha) values
 
    IF automatic mode:
    - run YOLO  
@@ -349,7 +349,7 @@ Handles ESC menu state and pause/quit logic.
 - [x] add ESC settings menu
 - [x] allow changing dead zone at runtime
 - [x] allow changing Kc at runtime
-- [ ] allow changing alpha at runtime
+- [x] allow changing alpha at runtime
 - [x] allow changing max step limit at runtime
 - [x] allow resume/quit from menu
 - [ ] improve visualization  

@@ -93,6 +93,7 @@ def draw_esc_menu(image, settings, selected_setting):
         f"Kc:            {settings['Kc']:.3f}",
         f"Max step pan:  {settings['max_step_pan']}",
         f"Max step tilt: {settings['max_step_tilt']}",
+        f"Smoother alpha: {settings['smoother_alpha']:.2f}",
     ]
 
     for idx, label in enumerate(setting_labels):
