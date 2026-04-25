@@ -306,7 +306,7 @@ smoothed = alpha * current + (1 - alpha) * previous
 - [ ] improve fallback logic  
 
 ### Control
-- [ ] add dead zone  
+- [x] add dead zone  
 - [ ] limit max servo speed  
 - [ ] consider PI/PID  
 
