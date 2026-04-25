@@ -161,13 +161,14 @@ while True:
                 pan, tilt = apply_limits(pan, tilt)
 
             draw_selected_person_status(image, selected_person_index, num_people)
+            draw_mode(image, f"{tracking_mode} | {target_mode}")
             break  # only process first result
 
     elif tracking_mode == "manual" and mouse_ctrl is not None:
         pan, tilt = mouse_ctrl.get_servo_angles(w, h)
         pan, tilt = apply_limits(pan, tilt)
 
-    draw_mode(image, f"{tracking_mode} | {target_mode}")
+    draw_mode(image, f"{tracking_mode}")
 
     cv2.imshow("Laser Tracker", image)
 
