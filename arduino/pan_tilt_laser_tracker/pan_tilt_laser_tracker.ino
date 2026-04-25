@@ -12,7 +12,7 @@ void setup() {
   pinMode(laserPin, OUTPUT);
   digitalWrite(laserPin, LOW);
   servoPan.write(90);
-  servoTilt.write(30);
+  servoTilt.write(90);
 }
 
 void loop() {

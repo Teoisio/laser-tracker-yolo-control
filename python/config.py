@@ -19,7 +19,7 @@ Kc = 0.05
 
 #Initial servo angles
 PAN_INIT = 90
-TILT_INIT = 60
+TILT_INIT = 90
 
 # COCO 17-keypoint skeleton connections
 # 0 nose
