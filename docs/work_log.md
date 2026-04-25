@@ -210,7 +210,14 @@ The smoother is reset when switching person.
 
 ---
 
-## 12. Main Program Flow (main.py)
+### 12. ESC Menu
+
+ESC opens a pause menu instead of closing directly.  
+From the menu, `R` resumes and `Q` quits.  
+While the menu is open, tracking/control is paused.
+
+---
+## 13. Main Program Flow (main.py)
 
 1. Initialize camera and model  
 2. Initialize modes (`auto`, `heart`)  
@@ -220,6 +227,11 @@ The smoother is reset when switching person.
    - flip image  
    - compute frame center  
    - draw crosshair  
+
+   IF ESC menu is open:
+   - draw pause/menu overlay  
+   - read menu input  
+   - resume or quit 
 
    IF automatic mode:
    - run YOLO  
@@ -233,7 +245,6 @@ The smoother is reset when switching person.
    - apply dead zone to reduce small oscillations
    - update control (pan, tilt)
    - limit servo speed
-   - apply limits
 
    IF manual mode:
    - read mouse position  
@@ -242,16 +253,15 @@ The smoother is reset when switching person.
    - apply limits  
    - compute laser state  
    - send `(pan, tilt, laser)`  
-
    - draw interface  
    - read keyboard input  
 
-4. Exit on ESC  
+4. quit from ESC menu
 5. release camera and close windows  
 
 ---
 
-## 13. File Structure
+## 14. File Structure
 
 ### main.py
 Main loop and system orchestration
@@ -289,9 +299,13 @@ Main loop and system orchestration
 - ignores low-confidence detections
 Formula:
 smoothed = alpha * current + (1 - alpha) * previous
+
+### menu.py
+Handles ESC menu state and pause/quit logic.
+
 ---
 
-## 14. Current System Capabilities
+## 15. Current System Capabilities
 
 - real-time person tracking  
 - pose-based targeting  
@@ -303,16 +317,16 @@ smoothed = alpha * current + (1 - alpha) * previous
 
 ---
 
-## 15. Current Limitations
+## 16. Current Limitations
 
-- target jitter due to noisy keypoints  
-- proportional control only  
-- no smoothing/filtering yet  
-- no calibration between pixels and servo angles  
+- target switching is based on left→right order (not persistent identity)  
+- tracking may switch if people cross or move quickly  
+- control parameters (dead zone, smoothing, max step) are manually tuned  
+- ESC menu does not yet allow changing settings at runtime  
 
 ---
 
-## 15. Next Steps (TODO)
+## 17. Next Steps (TODO)
 
 ### Vision
 - [x] implement keypoint smoothing
@@ -327,11 +341,11 @@ smoothed = alpha * current + (1 - alpha) * previous
 
 ### Interface
 - [ ] add UI panel (TAB)  
-- [ ] add ESC settings menu
+- [x] add ESC settings menu
 - [ ] allow changing dead zone at runtime
 - [ ] allow changing Kc at runtime
 - [ ] allow changing max step limit at runtime
-- [ ] allow resume/quit from menu
+- [x] allow resume/quit from menu
 - [ ] improve visualization  
 
 ### System
@@ -346,7 +360,7 @@ smoothed = alpha * current + (1 - alpha) * previous
 
 ---
 
-## 17. Notes
+## 18. Notes
 
 This file represents the development workflow and system logic.  
 It will be refined later into a formal report.
