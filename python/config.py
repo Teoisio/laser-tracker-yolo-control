@@ -42,10 +42,23 @@ SKELETON = [
     (12, 14), (14, 16)
 ]
 
+# Confidance
 KP_CONF_THRES = 0.5
 CONF_TH = 0.4
 
 # Smoother
 SMOOTHER_ALPHA = 0.4
 
+# Dead zone
 DEAD_ZONE = 10
+
+# Max step limits
+"""
+1 = very smooth but slower
+2 = good starting point
+4 = faster but less smooth
+"""
+MAX_STEP_PAN = 2
+MAX_STEP_TILT = 2
+
+

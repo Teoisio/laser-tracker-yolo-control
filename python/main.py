@@ -21,7 +21,8 @@ from control import (
     apply_limits,
     update_target_mode,
     update_tracking_mode,
-    apply_dead_zone
+    apply_dead_zone,
+    limit_step
 )
 from smoother import KeypointSmoother
 from mouse import MouseController
@@ -132,7 +133,15 @@ while True:
                         e_x, e_y = apply_dead_zone(e_x, e_y, config.DEAD_ZONE)
                     
                         draw_error(image, e_x, e_y)
-                        pan, tilt = update_control(pan, tilt, e_x, e_y, config.Kc)
+
+                        new_pan, new_tilt = update_control(pan, tilt, e_x, e_y, config.Kc)
+
+                        pan, tilt = limit_step(
+                            pan, tilt,
+                            new_pan, new_tilt, 
+                            config.MAX_STEP_PAN,
+                            config.MAX_STEP_TILT
+                        )
 
                     pan, tilt = apply_limits(pan, tilt)
 

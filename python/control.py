@@ -40,3 +40,8 @@ def apply_dead_zone(e_x, e_y, threshold):
     if abs(e_y) < threshold:
         e_y = 0
     return e_x, e_y
+
+def limit_step(prev_pan, prev_tilt, pan, tilt, max_step_pan, max_step_tilt):
+    pan  = int(max(prev_pan  - max_step_pan,  min(prev_pan  + max_step_pan,  pan)))
+    tilt = int(max(prev_tilt - max_step_tilt, min(prev_tilt + max_step_tilt, tilt)))
+    return pan, tilt

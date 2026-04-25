@@ -221,6 +221,8 @@ This significantly improves tracking stability.
    - compute error (center - target)
    - apply dead zone to reduce small oscillations
    - update control (pan, tilt)
+   - limit servo speed
+   - apply limits
 
    IF manual mode:
    - read mouse position  
@@ -307,7 +309,7 @@ smoothed = alpha * current + (1 - alpha) * previous
 
 ### Control
 - [x] add dead zone  
-- [ ] limit max servo speed  
+- [x] limit max servo speed  
 - [ ] consider PI/PID  
 
 ### Multi-person Tracking
