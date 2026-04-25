@@ -70,3 +70,25 @@ def draw_selected_person_status(image, selected_person_index, num_people):
         (0, 200, 255),
         2
     )
+
+def draw_esc_menu(image):
+    h, w = image.shape[:2]
+
+    # Semi-transparent dark overlay
+    overlay = image.copy()
+    cv2.rectangle(overlay, (0, 0), (w, h), (0, 0, 0), -1)
+    cv2.addWeighted(overlay, 0.5, image, 0.5, 0, image)
+
+    cx = w // 2
+
+    cv2.putText(image, "PAUSED", (cx - 100, h // 2 - 120),
+                cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 3)
+    cv2.putText(image, "R  -  Resume", (cx - 120, h // 2 - 20),
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+    cv2.putText(image, "Q  -  Quit", (cx - 120, h // 2 + 40),
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+    cv2.putText(image, "Future settings:", (cx - 120, h // 2 + 120),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (180, 180, 180), 1)
+    cv2.putText(image, "1 - Dead zone   2 - Max step   3 - Gain",
+                (cx - 220, h // 2 + 160),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (140, 140, 140), 1)
