@@ -347,9 +347,10 @@ Handles ESC menu state and pause/quit logic.
 ### Interface
 - [ ] add UI panel (TAB)  
 - [x] add ESC settings menu
-- [ ] allow changing dead zone at runtime
-- [ ] allow changing Kc at runtime
-- [ ] allow changing max step limit at runtime
+- [x] allow changing dead zone at runtime
+- [x] allow changing Kc at runtime
+- [ ] allow changing alpha at runtime
+- [x] allow changing max step limit at runtime
 - [x] allow resume/quit from menu
 - [ ] improve visualization  
 

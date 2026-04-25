@@ -1,7 +1,7 @@
-ARROW_LEFT  = 81
-ARROW_RIGHT = 83
-ARROW_UP    = 82
-ARROW_DOWN  = 84
+ARROW_LEFT  = 2
+ARROW_RIGHT = 3
+ARROW_UP    = 0
+ARROW_DOWN  = 1
 
 SETTING_KEYS = ['dead_zone', 'Kc', 'max_step_pan', 'max_step_tilt']
 
