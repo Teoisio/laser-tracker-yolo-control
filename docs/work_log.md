@@ -319,7 +319,11 @@ smoothed = alpha * current + (1 - alpha) * previous
 
 ### Interface
 - [ ] add UI panel (TAB)  
-- [ ] add esc panel (ESC)
+- [ ] add ESC settings menu
+- [ ] allow changing dead zone at runtime
+- [ ] allow changing Kc at runtime
+- [ ] allow changing max step limit at runtime
+- [ ] allow resume/quit from menu
 - [ ] improve visualization  
 
 ### System
