@@ -30,7 +30,10 @@ from control import (
     update_tracking_mode,
     update_selected_person
 )
-from menu import update_menu_state
+from menu import (
+    update_menu_state,
+    update_settings
+)
 
 from smoother import KeypointSmoother
 
@@ -65,6 +68,15 @@ num_people = 0
 # Menu state
 menu_open = False
 should_quit = False
+selected_setting = 0
+
+# Live settings (initialized from config, modified at runtime)
+settings = {
+    'dead_zone':     config.DEAD_ZONE,
+    'Kc':            config.Kc,
+    'max_step_pan':  config.MAX_STEP_PAN,
+    'max_step_tilt': config.MAX_STEP_TILT,
+}
 
 # Mouse controller (initialized after first imshow)
 mouse_ctrl = None
@@ -162,11 +174,11 @@ while True:
 
                     if target_x is not None:
                         e_x, e_y = compute_error(center_x, center_y, target_x, target_y)
-                        e_x, e_y = apply_dead_zone(e_x, e_y, config.DEAD_ZONE)
+                        e_x, e_y = apply_dead_zone(e_x, e_y, settings['dead_zone'])
                         draw_error(image, e_x, e_y)
 
-                        new_pan, new_tilt = update_control(pan, tilt, e_x, e_y, config.Kc)
-                        pan, tilt = limit_step(pan, tilt, new_pan, new_tilt, config.MAX_STEP_PAN, config.MAX_STEP_TILT)
+                        new_pan, new_tilt = update_control(pan, tilt, e_x, e_y, settings['Kc'])
+                        pan, tilt = limit_step(pan, tilt, new_pan, new_tilt, settings['max_step_pan'], settings['max_step_tilt'])
 
                     pan, tilt = apply_limits(pan, tilt)
                 if num_people > 0:
@@ -183,7 +195,7 @@ while True:
             draw_mode(image, "manual")
 
     if menu_open:
-        draw_esc_menu(image)
+        draw_esc_menu(image, settings, selected_setting)
 
     cv2.imshow("Laser Tracker", image)
 
@@ -204,11 +216,12 @@ while True:
     if should_quit:
         break
 
-    if not menu_open:
+    if menu_open:
+        settings, selected_setting = update_settings(key, settings, selected_setting)
+    else:
         target_mode = update_target_mode(key, target_mode)
         tracking_mode = update_tracking_mode(key, tracking_mode)
-
-        # Update selected person and reset smoother if changed
+ 
         prev_selected = selected_person_index
         selected_person_index = update_selected_person(key, selected_person_index, num_people)
         if selected_person_index != prev_selected:

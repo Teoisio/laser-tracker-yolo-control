@@ -71,24 +71,44 @@ def draw_selected_person_status(image, selected_person_index, num_people):
         2
     )
 
-def draw_esc_menu(image):
+def draw_esc_menu(image, settings, selected_setting):
     h, w = image.shape[:2]
 
-    # Semi-transparent dark overlay
     overlay = image.copy()
     cv2.rectangle(overlay, (0, 0), (w, h), (0, 0, 0), -1)
     cv2.addWeighted(overlay, 0.5, image, 0.5, 0, image)
 
-    cx = w // 2
+    cx = w // 2 - 200
 
-    cv2.putText(image, "PAUSED", (cx - 100, h // 2 - 120),
+    # Title
+    cv2.putText(image, "PAUSED", (cx, 80),
                 cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 3)
-    cv2.putText(image, "R  -  Resume", (cx - 120, h // 2 - 20),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-    cv2.putText(image, "Q  -  Quit", (cx - 120, h // 2 + 40),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-    cv2.putText(image, "Future settings:", (cx - 120, h // 2 + 120),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (180, 180, 180), 1)
-    cv2.putText(image, "1 - Dead zone   2 - Max step   3 - Gain",
-                (cx - 220, h // 2 + 160),
-                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (140, 140, 140), 1)
+
+    # Settings section
+    cv2.putText(image, "-- Settings --", (cx, 155),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (180, 180, 180), 2)
+
+    setting_labels = [
+        f"Dead zone:     {settings['dead_zone']}",
+        f"Kc:            {settings['Kc']:.3f}",
+        f"Max step pan:  {settings['max_step_pan']}",
+        f"Max step tilt: {settings['max_step_tilt']}",
+    ]
+
+    for idx, label in enumerate(setting_labels):
+        color  = (0, 255, 255) if idx == selected_setting else (150, 150, 150)
+        prefix = ">> " if idx == selected_setting else "   "
+        cv2.putText(image, prefix + label, (cx, 200 + idx * 45),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.75, color, 2)
+
+    # Controls section
+    cv2.putText(image, "-- Controls --", (cx, 410),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.8, (180, 180, 180), 2)
+    cv2.putText(image, "UP / DOWN    - select setting", (cx, 455),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (200, 200, 200), 1)
+    cv2.putText(image, "LEFT / RIGHT - change value", (cx, 490),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (200, 200, 200), 1)
+    cv2.putText(image, "R  -  Resume", (cx, 535),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+    cv2.putText(image, "Q  -  Quit", (cx, 575),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)

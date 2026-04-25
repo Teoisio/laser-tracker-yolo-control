@@ -216,6 +216,9 @@ ESC opens a pause menu instead of closing directly.
 From the menu, `R` resumes and `Q` quits.  
 While the menu is open, tracking/control is paused.
 
+The ESC menu will allow runtime tuning of control parameters such as dead zone, Kc, and max step.  
+Values are initialized from config.py and modified temporarily during execution.
+
 ---
 ## 13. Main Program Flow (main.py)
 
@@ -232,6 +235,7 @@ While the menu is open, tracking/control is paused.
    - draw pause/menu overlay  
    - read menu input  
    - resume or quit 
+   - update the settings (Kc, dead zone, max step) values
 
    IF automatic mode:
    - run YOLO  
