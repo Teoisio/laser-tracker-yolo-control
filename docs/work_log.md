@@ -323,6 +323,7 @@ Handles ESC menu state and pause/quit logic.
 - tracking may switch if people cross or move quickly  
 - control parameters (dead zone, smoothing, max step) are manually tuned  
 - ESC menu does not yet allow changing settings at runtime  
+- no calibration between pixels and servo angles  
 
 ---
 
