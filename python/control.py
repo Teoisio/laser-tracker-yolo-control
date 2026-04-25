@@ -33,3 +33,10 @@ def update_tracking_mode(key, current_mode):
     if key == ord(' '):
         return "manual" if current_mode == "auto" else "auto"
     return current_mode
+
+def apply_dead_zone(e_x, e_y, threshold):
+    if abs(e_x) < threshold:
+        e_x = 0
+    if abs(e_y) < threshold:
+        e_y = 0
+    return e_x, e_y

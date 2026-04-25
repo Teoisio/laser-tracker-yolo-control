@@ -20,7 +20,8 @@ from control import (
     update_control,
     apply_limits,
     update_target_mode,
-    update_tracking_mode
+    update_tracking_mode,
+    apply_dead_zone
 )
 from smoother import KeypointSmoother
 from mouse import MouseController
@@ -128,6 +129,8 @@ while True:
 
                     if target_x is not None:
                         e_x, e_y = compute_error(center_x, center_y, target_x, target_y)
+                        e_x, e_y = apply_dead_zone(e_x, e_y, config.DEAD_ZONE)
+                    
                         draw_error(image, e_x, e_y)
                         pan, tilt = update_control(pan, tilt, e_x, e_y, config.Kc)
 

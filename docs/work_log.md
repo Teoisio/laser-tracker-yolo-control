@@ -218,8 +218,9 @@ This significantly improves tracking stability.
    - apply keypoint smoothing
    - compute heart  
    - select target  
-   - compute error  
-   - update control  
+   - compute error (center - target)
+   - apply dead zone to reduce small oscillations
+   - update control (pan, tilt)
 
    IF manual mode:
    - read mouse position  

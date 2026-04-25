@@ -47,3 +47,5 @@ CONF_TH = 0.4
 
 # Smoother
 SMOOTHER_ALPHA = 0.4
+
+DEAD_ZONE = 10
