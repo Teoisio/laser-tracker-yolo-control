@@ -329,6 +329,7 @@ smoothed = alpha * current + (1 - alpha) * previous
 - [ ] improve visualization  
 
 ### System
+- [ ] tuning maxstep, alpha, deadzone starting by (2,0.4,10)
 - [ ] full hardware testing  
 - [ ] calibration  
 
