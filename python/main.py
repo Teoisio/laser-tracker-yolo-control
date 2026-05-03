@@ -39,11 +39,11 @@ from smoother import KeypointSmoother
 
 from mouse import MouseController
 
-# from serial_controller import SerialController
+from serial_controller import SerialController
 
 # Serial --- (UNCOMMENT TO ENABLE)
-# serial_ctrl = SerialController(port=config.SERIAL_PORT, baud=config.SERIAL_BAUD, interval=config.SERIAL_INTERVAL)
-# serial_ctrl.start()
+serial_ctrl = SerialController(port=config.SERIAL_PORT, baud=config.SERIAL_BAUD, interval=config.SERIAL_INTERVAL)
+serial_ctrl.start()
 
 # Camera
 cap = cv2.VideoCapture(config.CAMERA_INDEX)
@@ -208,7 +208,7 @@ while True:
     laser = int(mouse_ctrl.laser_on) if mouse_ctrl else 0
 
     # Push latest state to serial thread (non-blocking)
-    # serial_ctrl.update(pan, tilt, laser)
+    serial_ctrl.update(pan, tilt, laser)
     print(f'{pan},{tilt},{laser}')  # debug — remove when serial is active
 
     key = cv2.waitKey(1)
@@ -235,4 +235,4 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
-# serial_ctrl.stop()
+serial_ctrl.stop()

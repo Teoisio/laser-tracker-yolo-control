@@ -2,9 +2,9 @@ import cv2
 from ultralytics import YOLO
 
 #Serial
-#SERIAL_PORT = /dev/cu.usbmodem1201
-#SERIAL_BAUD = 115200
-#SERIAL_INTERVAL = 0.05 
+SERIAL_PORT = '/dev/cu.usbmodem1201'
+SERIAL_BAUD = 115200
+SERIAL_INTERVAL = 0.05 
 
 #Camera
 CAMERA_INDEX = 0

@@ -5,7 +5,7 @@ import numpy as np
 def mouse_to_servo(mouse_x, mouse_y, frame_w, frame_h):
     """Map mouse pixel position to servo angles."""
     pan  = int(np.interp(mouse_x, [0, frame_w], [0, 180]))
-    tilt = int(np.interp(mouse_y, [0, frame_h], [0, 180]))
+    tilt = int(np.interp(mouse_y, [0, frame_h], [180, 0]))
     return pan, tilt
 
 

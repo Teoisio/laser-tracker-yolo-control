@@ -5,7 +5,7 @@ def compute_error(center_x, center_y, torso_x, torso_y):
 
 def update_control(pan, tilt, e_x, e_y, Kc):
     pan = int(pan - Kc * e_x)
-    tilt = int(tilt - Kc * e_y)
+    tilt = int(tilt + Kc * e_y)
     return pan, tilt
 
 def apply_limits(pan, tilt):
